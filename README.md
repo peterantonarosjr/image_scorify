@@ -4,7 +4,7 @@ Python package to produce image feature scores
 
 ## Description
 
-(Insert Description Here)
+This package fills the gap between Machine Learning and Deep Learning modeling. 
 
 ## Setup & Install
 
