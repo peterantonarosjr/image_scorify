@@ -1,17 +1,27 @@
+import os
 import numpy as np
 from PIL import Image
 
 class ImageScoring:
     def __init__(self,filePath):
         self.filePath = filePath
-        self.imageList = self.importImage(filePath)
+        self.imageList = self.importImages(filePath)
     
     #Method for reading images from a file path
     def importImages(self,filePath):
         imageList = []
-        #Check if folder or individual file here
-        img = Image.open(filePath)
-        imageList.append(img)
+
+        if os.path.isfile(filePath):
+            img = Image.open(filePath)
+            imageList.append(img)
+            #img.close()            
+        else:
+            files = os.listdir(filePath)
+            for item in files:
+                img = Image.open(filePath+item)
+                imageList.append(img)
+                #img.close()
+
         return imageList
 
     #Method for writing images to a file path
@@ -20,7 +30,11 @@ class ImageScoring:
 
             imgName = "Image_Export"+str(index)+"."
             image.save(filePath+imgName+fileType.lower(),fileType,quality)
-        
+    
+    def closePath(self):
+        for image in self.imageList:
+            image.close()
+
     #Method for resizing images
     def resize(self,sizeX=500,sizeY=500,quality=80,antialias=True):
         for index,image in enumerate(self.imageList):
@@ -33,12 +47,22 @@ class ImageScoring:
             self.imageList[index] = imResize
 
     #Method for symmetry scoring on images
-    def symmetryScore(self):
+    def symmetryScore(self, axis):
         symmetryScoreList = []
 
         for image in self.imageList:
-            currSymScore = 0
-            symmetryScoreList.append(currSymScore)
+            pixelArray = np.array(image, dtype=np.uint8)
+            pixelRows,pixelCols,channels = pixelArray.shape
+
+            if axis == 0:
+                middle = (pixelCols/2)-1
+
+
+            elif axis == 1:
+                middle = (pixelRows/2)-1
+
+
+            symmetryScoreList.append(1)
 
         return symmetryScoreList
 
@@ -61,18 +85,15 @@ class ImageScoring:
         return
 
 '''
+
 def main():
-    pathImport = '/home/peterjr/Pictures/TestImages'
+    pathImport = '/home/peterjr/Pictures/TestImages/TestImage.jpg'
     imageScore = ImageScoring(pathImport)
     pathSave = '/home/peterjr/Pictures/'
-
-    imageScore.export(imageScore.imageList,pathSave)
-    #print(imageScore.imageList)
-    imageScore.symmetryScore(imageScore.imageList,allImages=False)
-
+    imageScore.symmetryScore(axis=0)
 
 if __name__ == "__main__":
     main()
-'''
 
+'''
 
